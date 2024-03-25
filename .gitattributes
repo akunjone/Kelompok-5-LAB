@@ -1,2 +1,623 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+<!--money tracker login-->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Login Page (Kelompok 5 Kelas B)</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="style2.css"/>
+    </head>
+    <body>
+        <div class="login container-fluid" align="center">
+            <h2><strong>MONEY TRACKER</h2>
+            <img src="mtimages/moneyimg.png">
+            <br><br>
+            <p>INPUT YOUR NAME</p>
+            <form id="loginForm" align="center" class="container-fluid">
+                <input type="text" class="rounded-1" id="nama" name="nama"><br/><br/>
+                <button type="submit" id="button">Submit</button>
+            </form>
+            <script>
+                document.getElementById("loginForm").addEventListener("submit", function(event) {
+                    event.preventDefault();
+                    var username = document.getElementById("nama").value;
+                    localStorage.setItem("nama", username);
+                    window.location.href = "moneyexpense.html";
+                });
+            </script>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+<!--money tracker MAIN-->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Expense Tracker</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="style2.css"/>
+    </head>
+
+    <body>
+        <div class="container-fluid text-center">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand justify-content-center" href="#">
+                    <img src="mtimages/moneyimg.png" alt="Bootstrap" class="navbar-logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse  justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="moneyexpense.html">Main</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="incomemoney.html">Income</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="outcomemoney.html">Outcome</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="aboutmoney.html">About Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="welcomeMessage" class="navbar-text">
+                    </span>
+                    <script>
+                        var username = localStorage.getItem("nama");
+                        var today = new Date();
+                        var hour = today.getHours();
+                        var greeting;
+                        if (hour < 12) {
+                            greeting = "Good Morning";
+                        } else if (hour < 18) {
+                            greeting = "Good Afternoon";
+                        } else {
+                            greeting = "Good Night";
+                        }
+                        document.getElementById("welcomeMessage").textContent = greeting + ", " + username;
+                    </script>
+                </div>
+            </nav>
+            <div class="container mt-5">
+                <div class="row align-items-start">
+                    <div class="col-md-5 white-background border rounded p-3">
+                        <h5>Balance</h5>
+                        <h4 id="balance">Rp</h4>
+                        <h1 id="balanceValue">0.00</h1>
+                        <p id="warningMessage" style="display: none; color: red;">Awas besar pasak daripada tiang</p>
+                    </div>
+                    <div class="col-md-6 white-background border rounded p-3 ms-3">
+                        <h2>Transactions</h2>
+                        <div id="transactions">
+                            Belum ada transaksi sejauh ini.
+                        </div>
+                        <table id="transactionTable">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        
+            <script>
+    window.onload = function() {
+        var incomes = JSON.parse(localStorage.getItem('incomes')) || [];
+        var outcome = JSON.parse(localStorage.getItem('Outcome')) || [];
+        var transactionsDiv = document.getElementById('transactions');
+        var balanceValue = document.getElementById('balanceValue');
+        var warningMessage = document.getElementById('warningMessage');
+
+        function renderTransactions() {
+            var balance = 0;
+            transactionsDiv.innerHTML = '';
+            if (incomes.length === 0 && outcome.length === 0) {
+                transactionsDiv.innerHTML = 'Belum ada transaksi sejauh ini.';
+            } else {
+                incomes.forEach(function(income, index) {
+                    var formattedAmount = parseInt(income.jumlah).toLocaleString();
+                    transactionsDiv.innerHTML += 
+                    '<div class="card text-white bg-success mb-3 w-100">' +
+                        '<div class="card-body d-flex align-items-center justify-content-between">' +
+                            '<div><h5 class="card-title">' + income.nama + '</h5>' +
+                            '<p class="card-text">' + income.type + '</p></div>' +
+                            '<p class="card-text display-5">Rp ' + formattedAmount + '</p>' +
+                            '<button class="btn btn-danger delete-button" onclick="deleteIncome(' + index + ')"><img src="mtimages/trash.png" alt="Delete" style="width: 20px; height: 20px; padding-bottom: 5px;"></button>' +
+                        '</div>' +
+                    '</div>';
+                    balance += parseInt(income.jumlah);
+                });
+                outcome.forEach(function(outcome, index) {
+                    var formattedAmount = parseInt(outcome.jumlah).toLocaleString();
+                    transactionsDiv.innerHTML += 
+                    '<div class="card text-white bg-danger mb-3 w-100">' +
+                        '<div class="card-body d-flex align-items-center justify-content-between">' +
+                            '<div><h5 class="card-title">' + outcome.nama + '</h5>' +
+                            '<p class="card-text">' + outcome.type + '</p></div>' +
+                            '<p class="card-text display-5">Rp ' + formattedAmount + '</p>' +
+                            '<button class="btn btn-danger delete-button" onclick="deleteOutcome(' + index + ')"><img src="mtimages/trash.png" alt="Delete" style="width: 20px; height: 20px; padding-bottom: 5px;"></button>' +
+                        '</div>' +
+                    '</div>';
+                    balance -= parseInt(outcome.jumlah);
+                });
+            }
+            balanceValue.innerHTML = balance.toLocaleString();
+            if (balance < 0) {
+                warningMessage.style.display = "block";
+            } else {
+                warningMessage.style.display = "none";
+            }
+        }
+
+        window.deleteIncome = function(index) {
+            incomes.splice(index, 1);
+            localStorage.setItem('incomes', JSON.stringify(incomes));
+            renderTransactions();
+        }
+
+        window.deleteOutcome = function(index) {
+            outcome.splice(index, 1);
+            localStorage.setItem('Outcome', JSON.stringify(outcome));
+            renderTransactions();
+        }
+
+        renderTransactions();
+    }
+    </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+<!--money tracker income-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Income Page - Kelompok 5</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="style2.css"/>
+    </head>
+
+    <body>
+        <div class="container-fluid text-center">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand justify-content-center" href="#">
+                    <img src="mtimages/moneyimg.png" alt="Bootstrap" class="navbar-logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse  justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="moneyexpense.html">Main</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="incomemoney.html">Income</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="outcomemoney.html">Outcome</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="aboutmoney.html">About Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="welcomeMessage" class="navbar-text">
+                    </span>
+                    <script>
+                        var username = localStorage.getItem("nama");
+                        var today = new Date();
+                        var hour = today.getHours();
+                        var greeting;
+                        if (hour < 12) {
+                            greeting = "Good Morning";
+                        } else if (hour < 18) {
+                            greeting = "Good Afternoon";
+                        } else {
+                            greeting = "Good Night";
+                        }
+                        document.getElementById("welcomeMessage").textContent = greeting + ", " + username;
+                    </script>
+                </div>
+            </nav>
+
+            <h3><script>
+                var username = localStorage.getItem("nama"); // Ambil nama pengguna dari localStorage
+                document.write(username + "'s Income<br/>");
+            </script></h3>
+
+            <form id="formIncome" class="p-3 container-fluid">
+                <div class="mb-3">
+                    <label for="namaPemasukan" class="form-label text-start fw-bold">Transaction Name</label>
+                    <input type="text" class="form-control" id="namaPemasukan" name="namaPemasukan">
+                </div>
+                <div class="mb-3">
+                    <label for="jumlahPemasukan" class="form-label text-start fw-bold">Transaction Nominal</label>
+                    <input type="number" class="form-control" id="jumlahPemasukan" name="jumlahPemasukan">
+                </div>
+                <div class="mb-3 container-fluid" align="center">
+                    <label for="transactionType" class="form-label text-start fw-bold" align="center">Transaction Type</label>
+                    <select id="transactionType" class="form-select" name="transactionType">
+                        <option value="Makan">Makan</option>
+                        <option value="Main">Main</option>
+                        <option value="Edukasi">Edukasi</option>
+                        <option value="Belanja">Belanja</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="validateForm()">Submit</button>
+            </form>
+        <script>
+            function validateForm() {
+            var namaPemasukan = document.getElementById('namaPemasukan').value;
+            var jumlahPemasukan = document.getElementById('jumlahPemasukan').value;
+            var transactionType = document.getElementById('transactionType').value;
+
+             if (namaPemasukan == "" || jumlahPemasukan == "" || transactionType == "") {
+            alert("Transaksi belum selesai, silakan lengkapi formulir!");
+            } else {
+                addIncome(namaPemasukan, jumlahPemasukan, transactionType);
+                alert("Transaksi sukses!");
+            }
+        }
+
+            function addIncome(name, amount, type) {
+            var incomes = JSON.parse(localStorage.getItem('incomes')) || [];
+            incomes.push({ nama: name, jumlah: amount, type: type });
+            localStorage.setItem('incomes', JSON.stringify(incomes));
+    }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+<!--money tracker outcome-->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Outcome Page - Kelompok 5</title>       
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="style2.css"/>
+    </head>
+
+    <body>
+        <div class="container-fluid text-center">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand justify-content-center" href="#">
+                    <img src="mtimages/moneyimg.png" alt="Bootstrap" class="navbar-logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse  justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="moneyexpense.html">Main</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="incomemoney.html">Income</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="outcomemoney.html">Outcome</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="aboutmoney.html">About Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="welcomeMessage" class="navbar-text">
+                    </span>
+                    <script>
+                        var username = localStorage.getItem("nama");
+                        var today = new Date();
+                        var hour = today.getHours();
+                        var greeting;
+                        if (hour < 12) {
+                            greeting = "Good Morning";
+                        } else if (hour < 18) {
+                            greeting = "Good Afternoon";
+                        } else {
+                            greeting = "Good Night";
+                        }
+                        document.getElementById("welcomeMessage").textContent = greeting + ", " + username;
+                    </script>
+                </div>
+            </nav>
+
+            <h3><script>
+                var username = localStorage.getItem("nama"); // Ambil nama pengguna dari localStorage
+                document.write(username + "'s Outcome<br/>");
+            </script></h3>
+
+            <form id="formIncome" class="p-3 container-fluid">
+                <div class="mb-3">
+                    <label for="namaPengeluaran" class="form-label text-start fw-bold">Transaction Name</label>
+                    <input type="text" class="form-control" id="namaPengeluaran" name="namaPengeluaran">
+                </div>
+                <div class="mb-3">
+                    <label for="jumlahPengeluaran" class="form-label text-start fw-bold">Transaction Nominal</label>
+                    <input type="number" class="form-control" id="jumlahPengeluaran" name="jumlahPengeluaran">
+                </div>
+                <div class="mb-3 container-fluid" align="center">
+                    <label for="transactionType" class="form-label text-start fw-bold">Transaction Type</label>
+                    <select id="transactionType" class="form-select" name="transactionType">
+                        <option value="Makan">Makan</option>
+                        <option value="Main">Main</option>
+                        <option value="Edukasi">Edukasi</option>
+                        <option value="Belanja">Belanja</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="validateForm()">Submit</button>
+            </form>
+        <script>
+            function validateForm() {
+                var namaPengeluaran = document.getElementById('namaPengeluaran').value;
+                var jumlahPengeluaran = document.getElementById('jumlahPengeluaran').value;
+                var transactionType = document.getElementById('transactionType').value;
+
+                if (namaPengeluaran == "" || jumlahPengeluaran == "" || transactionType == "") {
+                    alert("Transaksi belum selesai, silakan lengkapi formulir!");
+                } else {
+                    addOutcome(namaPengeluaran, jumlahPengeluaran, transactionType);
+                    alert("Transaksi sukses!");
+                }
+            }
+
+            function addOutcome(name, amount, type) {
+                var Outcome = JSON.parse(localStorage.getItem('Outcome')) || [];
+                Outcome.push({ nama: name, jumlah: amount, type: type });
+                localStorage.setItem('Outcome', JSON.stringify(Outcome));
+            }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+<!--money tracker about us-->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>About Us - Kelompok 5</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="style2.css"/>
+    </head>
+
+    <body>
+        <div class="container-fluid text-center">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand justify-content-center" href="#">
+                    <img src="mtimages/moneyimg.png" alt="Bootstrap" class="navbar-logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse  justify-content-center" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="moneyexpense.html">Main</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="incomemoney.html">Income</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="outcomemoney.html">Outcome</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="aboutmoney.html">About Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="welcomeMessage" class="navbar-text">
+                    </span>
+                    <script>
+                        var username = localStorage.getItem("nama");
+                        var today = new Date();
+                        var hour = today.getHours();
+                        var greeting;
+                        if (hour < 12) {
+                            greeting = "Good Morning";
+                        } else if (hour < 18) {
+                            greeting = "Good Afternoon";
+                        } else {
+                            greeting = "Good Night";
+                        }
+                        document.getElementById("welcomeMessage").textContent = greeting + ", " + username;
+                    </script>
+                </div>
+            </nav>
+            
+            <div class="py-5">
+                <h3><strong>About Us</strong></h3>
+                <p class="lead">
+                    Inilah profil kami, mahasiswa dibawah naungan Universitas Multimedia Nusantara, 
+                    yang bertakwa pada Yang Mahakuasa, berintegritas, dan 
+                    penuh dedikasi demi memajukan bangsa dan negara. Bersama Ibu Nina tercinta, semoga kami 
+                    menjadi mahasiswa yang unggul dan mengharumkan nama Indonesia.
+                </p>
+                <h4>Profil Kami</h4>
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-4 pt-3">
+                        <div class="card">
+                            <img src="mtimages/John.jpg" class="card-img-top rounded-circle mx-auto d-block pt-3" alt="John" style="object-fit: cover; width: 150px; height: 150px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><strong>Ketua - John</strong></h5>
+                                <p class="card-text">Keturunan John Wick</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4 pt-3">
+                        <div class="card">
+                            <img src="mtimages/Max.jpg" class="card-img-top rounded-circle mx-auto d-block pt-3" alt="Max" style="object-fit: cover; width: 150px; height: 150px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><strong>Anggota - Max</strong></h5>
+                                <p class="card-text">Saya suka salam OMB</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4 pt-3">
+                        <div class="card">
+                            <img src="mtimages/Alif.jpg" class="card-img-top rounded-circle mx-auto d-block pt-3" alt="Alif" style="object-fit: cover; width: 150px; height: 150px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><strong>Anggota - Alif</strong></h5>
+                                <p class="card-text">May the Force be with you</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4 pt-3">
+                        <div class="card">
+                            <img src="mtimages/Haikal.jpg" class="card-img-top rounded-circle mx-auto d-block pt-3" alt="Haikal" style="object-fit: cover; width: 150px; height: 150px;">
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><strong>Anggota - Haikal</strong></h5>
+                                <p class="card-text">*Approaching Minimums *Minimums Continue!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
+
+
+<!--css file style2.css-->
+body{
+    background-image: url('mtimages/tokyo-japan-wallpaper.jpg');
+    display: flex;
+    background-position: center;
+    background-size: auto;
+    object-fit: contain;
+}
+.white-background {
+    background-color: white;
+    padding: 20px;
+    margin: 25px;
+    border-radius: 5px;
+}
+.login{
+    align-content:center;
+    width:30%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:50px;
+}
+.login img{
+    width:50%;
+}
+.navbar{
+    width:100%;
+}
+.navbar-logo {
+    width: 30px;
+    height: 24px;
+    margin-right: 10px;
+}
+.login button{
+    border-radius:100px;
+    background-color:rgb(255, 59, 59);
+    color:aliceblue;
+}
+#formIncome{
+    width:50%;
+    align-content:center;
+}
+#nama{
+    width: 250px;
+    height: 35px;
+    border-color: #000000;
+}
+
+#button{
+    width: 120px;
+}
+
+.transactionTable{
+    padding: 1000px;
+}
+
+#transactionType {
+    width: 200px;
+    text-align: center;
+}
+
+.container{
+    width:100%;
+}
+
+.container a{
+    text-decoration: none;
+}
+
+.card img{
+    height: auto;
+    border: 10px;
+    border-color: #ffc400;
+    transition: .3s;
+}
+.card img:hover{
+transform: scale(1.2);
+}
+.card{
+    position: relative;
+    cursor: pointer;
+    transition: box-shadow .3s;
+    display: flex;
+}
+.card::before, .card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: #fff;
+    transition: transform .3s;
+    z-index: -1;
+  }
+  
+  .card::before {
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    transform: scale(.9);
+  }
+  
+  .card::after {
+    box-shadow: 0 5px 15px rgba(0,0,0,.3);
+    transform: scale(.8);
+  }
+  
+  .card:hover::before, .card:hover::after {
+    transform: scale(1);
+  }
+
+.delete-button {
+    display: none;
+    background-color: #ffffff;
+}
+
+.card:hover .delete-button {
+    display: block;
+}
+
